@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from pathlib import Path
-from ..schemas import ParsedElement
+from ..schemas import ParsedTextElement
 
 class BaseParser(ABC):
     """
@@ -9,7 +9,7 @@ class BaseParser(ABC):
     """
     
     @abstractmethod
-    def parse(self, file_path: Path) -> List[ParsedElement]:
+    def parse(self, file_path: Path) -> List[ParsedTextElement]:
         """
         Parse a file and extract structural elements.
         
@@ -17,6 +17,6 @@ class BaseParser(ABC):
             file_path: Path to the file to parse.
             
         Returns:
-            A list of ParsedElement objects representing the document's structure.
+            A list of ParsedTextElement objects representing the document's structure.
         """
         pass

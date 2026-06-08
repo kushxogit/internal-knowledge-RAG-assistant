@@ -1,21 +1,21 @@
 from abc import ABC, abstractmethod
 from typing import List
-from ..schemas import ParsedElement, DocumentChunk
+from ..schemas import ParsedTextElement, TextChunk
 
 class BaseChunker(ABC):
     """
-    Base interface for all chunking strategies.
+    Base interface for all text chunkers.
     """
     
     @abstractmethod
-    def chunk(self, elements: List[ParsedElement]) -> List[DocumentChunk]:
+    def chunk(self, elements: List[ParsedTextElement]) -> List[TextChunk]:
         """
-        Group parsed elements into chunks.
+        Convert a list of parsed elements into chunks suitable for embedding.
         
         Args:
-            elements: List of structural elements extracted from a document.
+            elements: A list of structural elements parsed from a document.
             
         Returns:
-            A list of DocumentChunk objects.
+            A list of TextChunk objects.
         """
         pass

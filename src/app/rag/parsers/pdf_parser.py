@@ -2,7 +2,7 @@ import pdfplumber
 from pathlib import Path
 from typing import List
 from .base import BaseParser
-from ..schemas import ParsedElement
+from ..schemas import ParsedTextElement
 
 class PdfParser(BaseParser):
     """
@@ -11,8 +11,8 @@ class PdfParser(BaseParser):
     Preserves page numbers.
     """
     
-    def parse(self, file_path: Path) -> List[ParsedElement]:
-        elements: List[ParsedElement] = []
+    def parse(self, file_path: Path) -> List[ParsedTextElement]:
+        elements: List[ParsedTextElement] = []
         
         with pdfplumber.open(file_path) as pdf:
             for page_num, page in enumerate(pdf.pages, start=1):
@@ -37,7 +37,7 @@ class PdfParser(BaseParser):
                     # For now, treat all PDF blocks as paragraphs
                     # A more advanced version could check font size to detect h1/h2
                     elements.append(
-                        ParsedElement(
+                        ParsedTextElement(
                             text=block,
                             element_type="paragraph",
                             page_number=page_num

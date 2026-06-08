@@ -3,47 +3,89 @@ from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from .parsers import MarkdownParser, DocxParser, PdfParser
-from .chunkers import LayoutAwareChunker
-from .embedders import LocalEmbedder
+from .parsers.base import BaseParser
+from .parsers.markdown_parser import MarkdownParser
+from .parsers.docx_parser import DocxParser
+from .parsers.pdf_parser import PdfParser
+from .chunkers.layout_aware import LayoutAwareChunker
+from .embedders.local_embedder import LocalEmbedder
+from .schemas import ParsedTextElement, TextChunk
 from ..models import Document, DocumentExtraction, DocumentChunk, ChunkEmbedding
 
-async def process_document(db: AsyncSession, document_id: int):
+async def process_document(db: AsyncSession, document_id: int) -> dict:
     """
     End-to-end ingestion pipeline for a single document.
     """
-    # 1. Fetch document from DB
-    result = await db.execute(select(Document).filter(Document.id == document_id))
-    document = result.scalar_one_or_none()
-    
-    if not document:
-        raise ValueError(f"Document with id {document_id} not found.")
-        
+    document = await _fetch_document(db, document_id)
     file_path = Path(document.storage_path)
+    
     if not file_path.exists():
         raise FileNotFoundError(f"File not found at {file_path}")
         
-    # 2. Determine parser based on content type or extension
-    ext = file_path.suffix.lower()
+    # 1. Parse Document
+    parser, extractor_name = _get_parser_for_extension(file_path.suffix)
+    parsed_elements = await _extract_elements_from_file(file_path, parser)
+    
+    # 2. Chunk Document
+    chunks = _chunk_elements(parsed_elements)
+    
+    # 3. Generate Embeddings
+    embeddings = await _generate_embeddings_for_chunks(chunks)
+    
+    # 4. Save Everything to DB
+    result_metrics = await _save_ingestion_results_to_db(
+        db=db,
+        document=document,
+        parsed_elements=parsed_elements,
+        extractor_name=extractor_name,
+        chunks=chunks,
+        embeddings=embeddings
+    )
+    
+    return result_metrics
+
+async def _fetch_document(db: AsyncSession, document_id: int) -> Document:
+    result = await db.execute(select(Document).filter(Document.id == document_id))
+    document = result.scalar_one_or_none()
+    if not document:
+        raise ValueError(f"Document with id {document_id} not found.")
+    return document
+
+def _get_parser_for_extension(extension: str) -> tuple[BaseParser, str]:
+    ext = extension.lower()
     if ext == '.pdf':
-        parser = PdfParser()
-        extractor_name = "pdfplumber"
+        return PdfParser(), "pdfplumber"
     elif ext == '.docx':
-        parser = DocxParser()
-        extractor_name = "python-docx"
+        return DocxParser(), "python-docx"
     elif ext in ['.md', '.txt']:
-        parser = MarkdownParser()
-        extractor_name = "markdown_regex"
+        return MarkdownParser(), "markdown_regex"
     else:
         raise ValueError(f"Unsupported file type: {ext}")
-        
-    # 3. Parse Document (Run blocking CPU-bound tasks in a threadpool)
-    parsed_elements = await asyncio.to_thread(parser.parse, file_path)
-    
-    # Concatenate raw text for the extraction record
-    raw_text = "\n\n".join(e.text for e in parsed_elements)
+
+async def _extract_elements_from_file(file_path: Path, parser: BaseParser) -> list[ParsedTextElement]:
+    # Run blocking CPU-bound parsing in a threadpool
+    return await asyncio.to_thread(parser.parse, file_path)
+
+def _chunk_elements(elements: list[ParsedTextElement]) -> list[TextChunk]:
+    chunker = LayoutAwareChunker()
+    return chunker.chunk(elements)
+
+async def _generate_embeddings_for_chunks(chunks: list[TextChunk]) -> list[list[float]]:
+    embedder = LocalEmbedder()
+    chunk_texts = [c.text for c in chunks]
+    return await asyncio.to_thread(embedder.embed, chunk_texts)
+
+async def _save_ingestion_results_to_db(
+    db: AsyncSession, 
+    document: Document, 
+    parsed_elements: list[ParsedTextElement], 
+    extractor_name: str,
+    chunks: list[TextChunk],
+    embeddings: list[list[float]]
+) -> dict:
     
     # Save Extraction
+    raw_text = "\n\n".join(e.text for e in parsed_elements)
     extraction = DocumentExtraction(
         extractor=extractor_name,
         extractor_version="1.0",
@@ -54,10 +96,6 @@ async def process_document(db: AsyncSession, document_id: int):
     extraction.document_id = document.id
     db.add(extraction)
     await db.flush() # Flush to get extraction.id
-    
-    # 4. Chunk Document
-    chunker = LayoutAwareChunker()
-    chunks = chunker.chunk(parsed_elements)
     
     # Save Chunks
     db_chunks = []
@@ -76,18 +114,14 @@ async def process_document(db: AsyncSession, document_id: int):
     db.add_all(db_chunks)
     await db.flush() # Flush to get chunk IDs
     
-    # 5. Embed Chunks
-    embedder = LocalEmbedder()
-    chunk_texts = [c.text for c in chunks]
-    embeddings = await asyncio.to_thread(embedder.embed, chunk_texts)
-    
     # Save Embeddings
+    embedder_meta = LocalEmbedder() # Just for metadata
     db_embeddings = []
     for db_chunk, emb in zip(db_chunks, embeddings):
         db_emb = ChunkEmbedding(
-            model_name=embedder.model_name,
+            model_name=embedder_meta.model_name,
             model_version="1.0",
-            dimensions=embedder.dimensions,
+            dimensions=embedder_meta.dimensions,
             embedding=emb
         )
         db_emb.chunk_id = db_chunk.id
@@ -98,7 +132,7 @@ async def process_document(db: AsyncSession, document_id: int):
     # Update Document status
     document.status = "processed"
     
-    # 6. Commit all to DB
+    # Commit all to DB
     await db.commit()
     
     return {

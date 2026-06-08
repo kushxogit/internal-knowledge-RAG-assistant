@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 @dataclass
-class ParsedElement:
+class ParsedTextElement:
     """
     Represents a single structural element extracted from a document.
     """
@@ -12,7 +12,7 @@ class ParsedElement:
     metadata: dict = field(default_factory=dict)
 
 @dataclass
-class DocumentChunk:
+class TextChunk:
     """
     Represents a chunk of text ready to be embedded.
     """

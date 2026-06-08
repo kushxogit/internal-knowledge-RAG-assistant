@@ -2,7 +2,7 @@ import docx
 from pathlib import Path
 from typing import List
 from .base import BaseParser
-from ..schemas import ParsedElement
+from ..schemas import ParsedTextElement
 
 class DocxParser(BaseParser):
     """
@@ -10,9 +10,9 @@ class DocxParser(BaseParser):
     Extracts headings based on paragraph styles.
     """
     
-    def parse(self, file_path: Path) -> List[ParsedElement]:
+    def parse(self, file_path: Path) -> List[ParsedTextElement]:
         doc = docx.Document(file_path)
-        elements: List[ParsedElement] = []
+        elements: List[ParsedTextElement] = []
         
         for paragraph in doc.paragraphs:
             text = paragraph.text.strip()
@@ -34,7 +34,7 @@ class DocxParser(BaseParser):
                 element_type = "paragraph"
                 
             elements.append(
-                ParsedElement(
+                ParsedTextElement(
                     text=text,
                     element_type=element_type
                 )
