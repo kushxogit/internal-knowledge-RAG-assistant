@@ -33,12 +33,13 @@ def register_admin_views(admin: CRUDAdmin) -> None:
         allowed_actions={"view", "create", "update"},
     )
 
-    admin.add_view(
-        model=Document,
-        allowed_actions={"view", "delete"},
-    )
+    # Temporarily comment out until schemas are built for Document
+    # admin.add_view(
+    #     model=Document,
+    #     allowed_actions={"view", "delete"},
+    # )
 
-    admin.add_view(
-        model=DocumentExtraction,
-        allowed_actions={"view", "delete"},
-    )
+    # admin.add_view(
+    #     model=DocumentExtraction,
+    #     allowed_actions={"view", "delete"},
+    # )

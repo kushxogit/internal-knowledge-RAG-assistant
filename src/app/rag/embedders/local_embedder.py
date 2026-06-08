@@ -12,16 +12,17 @@ class LocalEmbedder(BaseEmbedder):
     """
     
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
-        global _model
         self._model_name = model_name
         self._dimensions = 384  # For all-MiniLM-L6-v2
-        
-        if _model is None:
-            # Note: This will download the model weights to the local cache the first time it runs.
-            _model = SentenceTransformer(self._model_name)
             
     def embed(self, texts: List[str]) -> List[List[float]]:
         global _model
+        if _model is None:
+            # Load model lazily here so it happens inside asyncio.to_thread (non-blocking)
+            # This is crucial to avoid PyTorch deadlocks from initializing in main thread
+            # but performing inference in a background thread.
+            _model = SentenceTransformer(self._model_name)
+            
         if not texts:
             return []
             

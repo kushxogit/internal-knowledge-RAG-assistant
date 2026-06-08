@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from .embedders.local_embedder import LocalEmbedder
-from ..models.chunk_embedding import ChunkEmbedding
-from ..models.document_chunk import DocumentChunk
+from ..models import ChunkEmbedding, DocumentChunk
 
 class Retriever:
     """

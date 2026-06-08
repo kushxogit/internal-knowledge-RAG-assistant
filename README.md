@@ -180,6 +180,15 @@ Create `src/.env` and set **app**, **database**, **JWT**, and **environment** se
 * `ENVIRONMENT=local|staging|production` controls API docs exposure
 * Set `ADMIN_*` to enable the first admin user
 
+## RAG System Operational Requirements
+
+If you are using the integrated Retrieval-Augmented Generation (RAG) features (`src/app/rag/`), ensure you meet the following requirements:
+
+1. **Database Extensions**: Your PostgreSQL database MUST have the `pgvector` and `pgcrypto` extensions installed. This is handled automatically in the Alembic migrations (`20baecb4d9ef` and `869d6099bb33`).
+2. **OpenRouter API Key**: The LLM generation relies on OpenRouter's free models tier. You MUST set `OPENROUTER_API_KEY=sk-or-...` in your `src/.env` file.
+3. **HTTP Referer Header**: Note that `src/app/rag/generator.py` sets the `HTTP-Referer` header to `http://localhost:8000` when calling OpenRouter. This is a strict requirement from OpenRouter to identify requests using their free models tier.
+4. **Sentence-Transformers Memory Limits**: The local vector embedder (`LocalEmbedder`) uses `sentence-transformers/all-MiniLM-L6-v2`. On the *first run*, it will download the weights (~90MB). While small for LLMs, it still requires sufficient RAM. Running this in heavily constrained containers (< 512MB RAM) may cause out-of-memory errors during the initial embedding.
+
 ## Common tasks
 
 ```bash

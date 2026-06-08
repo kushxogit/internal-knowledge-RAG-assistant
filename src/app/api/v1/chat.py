@@ -24,5 +24,8 @@ async def chat_endpoint(request: ChatRequest, db: AsyncSession = Depends(async_g
         assistant = Assistant(db)
         response_text = await assistant.chat(user_query=request.query, history=request.history)
         return ChatResponse(response=response_text)
+    except ValueError as e:
+        raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Avoid leaking full stack trace or raw OpenRouter exceptions, but provide useful feedback
+        raise HTTPException(status_code=503, detail="The Assistant is currently unavailable. Please try again later.")

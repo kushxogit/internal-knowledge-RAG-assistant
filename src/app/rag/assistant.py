@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .retriever import Retriever
 from .generator import Generator
 
@@ -24,7 +24,7 @@ class Assistant:
         self.retriever = Retriever(db)
         self.generator = Generator()
         
-    async def chat(self, user_query: str, history: List[Dict[str, str]] = None) -> str:
+    async def chat(self, user_query: str, history: Optional[List[Dict[str, str]]] = None) -> str:
         """
         Process a user query by retrieving context and generating an answer.
         """

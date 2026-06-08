@@ -31,11 +31,11 @@ def upgrade() -> None:
     sa.Column('chunking_strategy', sa.String(length=30), nullable=False),
     sa.Column('text', sa.Text(), nullable=False),
     sa.Column('char_count', sa.Integer(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=False),
+    sa.Column('uuid', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
     sa.Column('token_count', sa.Integer(), nullable=True),
     sa.Column('page_number', sa.Integer(), nullable=True),
     sa.Column('layout_context', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['extraction_id'], ['document_extraction.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -49,8 +49,8 @@ def upgrade() -> None:
     sa.Column('model_version', sa.String(length=40), nullable=False),
     sa.Column('dimensions', sa.Integer(), nullable=False),
     sa.Column('embedding', pgvector.sqlalchemy.vector.VECTOR(dim=384), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('uuid', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['chunk_id'], ['document_chunk.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
