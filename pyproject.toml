@@ -35,6 +35,15 @@ dependencies = [
     "mypy>=1.16.0",
     "structlog>=25.1.0,<=25.5.0",
     "rich>=14.2.0",
+    # --- RAG pipeline dependencies ---
+    # pgvector: SQLAlchemy type for vector(384) columns + pgvector DB integration
+    "pgvector>=0.3.0",
+    # sentence-transformers: runs all-MiniLM-L6-v2 locally for free 384-dim embeddings
+    "sentence-transformers>=3.0.0",
+    # pdfplumber: extracts text from PDFs preserving page numbers for layout-aware chunking
+    "pdfplumber>=0.11.0",
+    # python-docx: reads .docx Word files and exposes heading styles for layout-aware chunking
+    "python-docx>=1.1.0",
 ]
 
 [project.optional-dependencies]
