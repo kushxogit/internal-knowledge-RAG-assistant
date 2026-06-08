@@ -24,7 +24,7 @@ class Generator:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "http://localhost:8000", # Required by OpenRouter for free models
-            "X-Title": "Internal Knowledge RAG"
+            "X-Title": "FastAPI RAG Boilerplate"
         }
         
     async def generate(self, messages: List[Dict[str, str]], fallback_models: List[str] = None) -> str:

@@ -1,7 +1,7 @@
 [project]
-name = "fastapi-boilerplate"
+name = "fastapi-rag-boilerplate"
 version = "0.1.0"
-description = "Batteries-included FastAPI starter with production-ready defaults, optional modules, and clear docs."
+description = "Batteries-included FastAPI RAG starter with pgvector, OpenRouter fallback LLMs, and production-ready defaults."
 authors = [{ name = "Benav Labs", email = "contact@benav.io" }]
 license = { text = "MIT" }
 readme = "README.md"

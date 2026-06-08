@@ -4,7 +4,7 @@ from .retriever import Retriever
 from .generator import Generator
 
 SYSTEM_PROMPT_TEMPLATE = """
-You are an internal knowledge assistant. Your goal is to answer the user's question accurately based ONLY on the provided context.
+You are a helpful AI assistant. Your goal is to answer the user's question accurately based ONLY on the provided context.
 
 Rules:
 1. Use the Context sections below to synthesize your answer.

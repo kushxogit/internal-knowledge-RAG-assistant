@@ -1,231 +1,95 @@
-<h1 align="center"> Benav Labs FastAPI boilerplate</h1>
-<p align="center" markdown=1>
-  <i><b>Batteries-included FastAPI starter</b> with production-ready defaults, optional modules, and clear docs.</i>
-</p>
+<h1 align="center">FastAPI + pgvector RAG Boilerplate</h1>
 
 <p align="center">
-  <a href="https://benavlabs.github.io/FastAPI-boilerplate">
-    <img src="docs/assets/FastAPI-boilerplate.png" alt="Purple Rocket with FastAPI Logo as its window." width="25%" height="auto">
-  </a>
+  <em>A batteries-included, production-ready starting point for building AI-powered RAG applications. Built heavily off of standard Domain-Driven Design patterns for FastAPI.</em>
 </p>
 
-<p align="center">
-📚 <a href="https://benavlabs.github.io/FastAPI-boilerplate/">Docs</a> · 🧠 <a href="https://deepwiki.com/benavlabs/FastAPI-boilerplate">DeepWiki</a> · 💬 <a href="https://discord.com/invite/TEmPs22gqB">Discord</a>
-</p>
+## ✨ Features
 
-<p align="center">
-  <a href="https://fastapi.tiangolo.com">
-      <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI">
-  </a>
-  <a href="https://www.postgresql.org">
-      <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  </a>
-  <a href="https://redis.io">
-      <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=fff&style=for-the-badge" alt="Redis">
-  </a>
-  <a href="https://deepwiki.com/benavlabs/FastAPI-boilerplate">
-      <img src="https://img.shields.io/badge/DeepWiki-1F2937?style=for-the-badge&logoColor=white" alt="DeepWiki">
-  </a>
-</p>
-
-## Features
-
-* ⚡️ Fully async FastAPI + SQLAlchemy 2.0
-* 🧱 Pydantic v2 models & validation
-* 🔐 JWT auth (access + refresh), cookies for refresh
-* 👮 Rate limiter + tiers (free/pro/etc.)
-* 🧰 FastCRUD for efficient CRUD & pagination
-* 🧑‍💼 **CRUDAdmin**: minimal admin panel (optional)
-* 🚦 ARQ background jobs (Redis)
-* 🧊 Redis caching (server + client-side headers)
-* 🌐 Configurable CORS middleware for frontend integration
-* 🐳 One-command Docker Compose
-* 🚀 NGINX & Gunicorn recipes for prod
-
-## Why and When to use it
-
-**Perfect if you want:**
-
-* A pragmatic starter with auth, CRUD, jobs, caching and rate-limits
-* **Sensible defaults** with the freedom to opt-out of modules
-* **Docs over boilerplate** in README - depth lives in the site
-
-> **Not a fit** if you need a monorepo microservices scaffold - [see the docs](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/project-structure/) for pointers.
-
-**What you get:**
-
-* **App**: FastAPI app factory, [env-aware docs](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/development/) exposure
-* **Auth**: [JWT access/refresh](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/authentication/), logout via token blacklist
-* **DB**: Postgres + SQLAlchemy 2.0, [Alembic migrations](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/database/)
-* **CRUD**: [FastCRUD generics](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/database/crud/) (get, get_multi, create, update, delete, joins)
-* **Caching**: [decorator-based endpoints cache](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/caching/); client cache headers
-* **Queues**: [ARQ worker](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/background-tasks/) (async jobs), Redis connection helpers
-* **Rate limits**: [per-tier + per-path rules](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/rate-limiting/)
-* **Admin**: [CRUDAdmin views](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/admin-panel/) for common models (optional)
-
-This is what we've been using in production apps. Several applications running in production started from this boilerplate as their foundation - from SaaS platforms to internal tools. It's proven, stable technology that works together reliably. Use this as the foundation for whatever you want to build on top.
-
-> **Building an AI SaaS?** Skip even more setup with [**FastroAI**](https://fastro.ai) - our production-ready template with AI integration, payments, and frontend included.
-
-## TL;DR - Quickstart
-
-Use the template on GitHub, create your repo, then:
-
-```bash
-git clone https://github.com/<you>/FastAPI-boilerplate
-cd FastAPI-boilerplate
-```
-
-**Quick setup:** Run the interactive setup script to choose your deployment configuration:
-
-```bash
-./setup.py
-```
-
-Or directly specify the deployment type: `./setup.py local`, `./setup.py staging`, or `./setup.py production`.
-
-The script copies the right files for your deployment scenario. Here's what each option sets up:
-
-### Option 1: Local development with Uvicorn
-
-Best for: **Development and testing**
-
-**Copies:**
-
-- `scripts/local_with_uvicorn/Dockerfile` → `Dockerfile`
-- `scripts/local_with_uvicorn/docker-compose.yml` → `docker-compose.yml`
-- `scripts/local_with_uvicorn/.env.example` → `src/.env`
-
-Sets up Uvicorn with auto-reload enabled. The example environment values work fine for development.
-
-**Manual setup:** `./setup.py local` or copy the files above manually.
-
-### Option 2: Staging with Gunicorn managing Uvicorn workers
-
-Best for: **Staging environments and load testing**
-
-**Copies:**
-
-- `scripts/gunicorn_managing_uvicorn_workers/Dockerfile` → `Dockerfile`
-- `scripts/gunicorn_managing_uvicorn_workers/docker-compose.yml` → `docker-compose.yml`
-- `scripts/gunicorn_managing_uvicorn_workers/.env.example` → `src/.env`
-
-Sets up Gunicorn managing multiple Uvicorn workers for production-like performance testing.
-
-> [!WARNING]
-> Change `SECRET_KEY` and passwords in the `.env` file for staging environments.
-
-**Manual setup:** `./setup.py staging` or copy the files above manually.
-
-### Option 3: Production with NGINX
-
-Best for: **Production deployments**
-
-**Copies:**
-
-- `scripts/production_with_nginx/Dockerfile` → `Dockerfile`
-- `scripts/production_with_nginx/docker-compose.yml` → `docker-compose.yml`
-- `scripts/production_with_nginx/.env.example` → `src/.env`
-
-Sets up NGINX as reverse proxy with Gunicorn + Uvicorn workers for production.
-
-> [!CAUTION]
-> You MUST change `SECRET_KEY`, all passwords, and sensitive values in the `.env` file before deploying!
-
-**Manual setup:** `./setup.py production` or copy the files above manually.
+- **End-to-End RAG Pipeline**: Ingest documents (PDF, DOCX, Markdown), chunk them, and query them.
+- **pgvector Integration**: Stores `sentence-transformers` embeddings right alongside your relational data in PostgreSQL for highly efficient cosine similarity searches.
+- **OpenRouter Fallbacks**: Connects to [OpenRouter](https://openrouter.ai/) for scalable, robust LLM generation, gracefully falling back across free or paid models.
+- **Background Workers**: Heavy ML tasks (like embedding and text extraction) are shifted off the main event loop to keep the API blazing fast.
+- **Dockerized**: Out of the box `docker-compose` setup with PostgreSQL, pgvector, pgcrypto, Redis, and Python ready to go.
 
 ---
 
-**Start your application:**
+## 🚀 Quickstart
 
+### 1. Prerequisites
+You will need Docker and Docker Compose installed.
+
+### 2. Environment Setup
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and add your **OpenRouter API Key**:
+   ```env
+   OPENROUTER_API_KEY=sk-or-v1-...
+   ```
+
+### 3. Run the Stack
+Start up the entire infrastructure:
 ```bash
-docker compose up
+docker compose up -d --build
 ```
 
-**Access your app:**
-- **Local**: http://127.0.0.1:8000 (auto-reload enabled) → [API docs](http://127.0.0.1:8000/docs)
-- **Staging**: http://127.0.0.1:8000 (production-like performance)
-- **Production**: http://localhost (NGINX reverse proxy)
-
-### Next steps
-
-**Create your first admin user:**
+### 4. Run Migrations
+Before the API works, you must apply the SQLAlchemy migrations to create the pgvector tables:
 ```bash
-docker compose run --rm create_superuser
+docker compose exec api alembic upgrade head
 ```
 
-**Run database migrations** (if you add models):
+---
+
+## 🧠 How it Works
+
+The RAG (Retrieval-Augmented Generation) pipeline consists of two phases:
+
+### Phase 1: Ingestion
+When a user uploads a document, the system:
+1. Extracts text while preserving structure (using `pdfplumber`, `python-docx`, or raw markdown).
+2. Uses chunking strategies to split text intelligently.
+3. Generates 384-dimensional vectors locally using `sentence-transformers/all-MiniLM-L6-v2`.
+4. Stores chunks and vectors via `pgvector`.
+
+*You can test ingestion by running:*
 ```bash
-cd src && uv run alembic revision --autogenerate && uv run alembic upgrade head
+docker compose exec worker python -m app.test_ingestion
 ```
 
-**Test background jobs:**
+### Phase 2: Retrieval & Generation
+When a user asks a question via the `/api/v1/chat/` endpoint:
+1. The **Retriever** embeds the user's query and performs a cosine-distance search against `pgvector` to find the top most relevant chunks.
+2. The **Generator** bundles the retrieved context into a strict prompt.
+3. The prompt is sent to **OpenRouter**, falling back across models if there are timeouts or rate limits.
+
+*You can test retrieval by running:*
 ```bash
-curl -X POST 'http://127.0.0.1:8000/api/v1/tasks/task?message=hello'
+docker compose exec worker python -m app.test_rag
 ```
 
-**Or run locally without Docker:**
-```bash
-uv sync && uv run uvicorn src.app.main:app --reload
+---
+
+## 📂 Project Structure
+
+```
+├── src/app/
+│   ├── api/v1/        # FastAPI HTTP endpoints (e.g. /chat/)
+│   ├── core/          # Configuration, DB connections, setup
+│   ├── models/        # SQLAlchemy tables (Document, ChunkEmbedding, etc.)
+│   ├── schemas/       # Pydantic schemas for data validation
+│   └── rag/           # Core AI Logic
+│       ├── embedders/ # Local SentenceTransformers integration
+│       ├── extractors/# PDF, DOCX, Markdown parsers
+│       ├── assistant.py # RAG orchestrator
+│       ├── generator.py # OpenRouter LLM interface
+│       └── ingestion.py # Document to Chunk pipeline
 ```
 
-> Full setup (from-scratch, .env examples, PostgreSQL & Redis, gunicorn, nginx) lives in the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/installation/).
+## 🛠 Operational Requirements
 
-## Configuration (minimal)
-
-Create `src/.env` and set **app**, **database**, **JWT**, and **environment** settings. See the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/) for a copy-pasteable example and production guidance.
-
-[https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/)
-
-* `ENVIRONMENT=local|staging|production` controls API docs exposure
-* Set `ADMIN_*` to enable the first admin user
-
-## RAG System Operational Requirements
-
-If you are using the integrated Retrieval-Augmented Generation (RAG) features (`src/app/rag/`), ensure you meet the following requirements:
-
-1. **Database Extensions**: Your PostgreSQL database MUST have the `pgvector` and `pgcrypto` extensions installed. This is handled automatically in the Alembic migrations (`20baecb4d9ef` and `869d6099bb33`).
-2. **OpenRouter API Key**: The LLM generation relies on OpenRouter's free models tier. You MUST set `OPENROUTER_API_KEY=sk-or-...` in your `src/.env` file.
-3. **HTTP Referer Header**: Note that `src/app/rag/generator.py` sets the `HTTP-Referer` header to `http://localhost:8000` when calling OpenRouter. This is a strict requirement from OpenRouter to identify requests using their free models tier.
-4. **Sentence-Transformers Memory Limits**: The local vector embedder (`LocalEmbedder`) uses `sentence-transformers/all-MiniLM-L6-v2`. On the *first run*, it will download the weights (~90MB). While small for LLMs, it still requires sufficient RAM. Running this in heavily constrained containers (< 512MB RAM) may cause out-of-memory errors during the initial embedding.
-
-## Common tasks
-
-```bash
-# run locally with reload (without Docker)
-uv sync && uv run uvicorn src.app.main:app --reload
-
-# run Alembic migrations
-cd src && uv run alembic revision --autogenerate && uv run alembic upgrade head
-
-# enqueue a background job (example endpoint)
-curl -X POST 'http://127.0.0.1:8000/api/v1/tasks/task?message=hello'
-```
-
-More examples (superuser creation, tiers, rate limits, admin usage) in the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/first-run/).
-
-## Contributing
-
-Read [contributing](CONTRIBUTING.md).
-
-## References
-
-This project was inspired by a few projects, it's based on them with things changed to the way I like (and pydantic, sqlalchemy updated)
-
-- [`Full Stack FastAPI and PostgreSQL`](https://github.com/tiangolo/full-stack-fastapi-postgresql) by @tiangolo himself
-- [`FastAPI Microservices`](https://github.com/Kludex/fastapi-microservices) by @kludex which heavily inspired this boilerplate
-- [`Async Web API with FastAPI + SQLAlchemy 2.0`](https://github.com/rhoboro/async-fastapi-sqlalchemy) for sqlalchemy 2.0 ORM examples
-- [`FastaAPI Rocket Boilerplate`](https://github.com/asacristani/fastapi-rocket-boilerplate/tree/main) for docker compose
-
-## License
-
-[`MIT`](LICENSE.md)
-
-## Contact
-
-Benav Labs – [benav.io](https://benav.io), [discord server](https://discord.com/invite/TEmPs22gqB)
-
-<hr>
-<a href="https://benav.io">
-  <img src="https://github.com/benavlabs/fastcrud/raw/main/docs/assets/benav_labs_banner.png" alt="Powered by Benav Labs - benav.io"/>
-</a>
+- **Memory**: The local `sentence-transformers` model requires ~2GB of RAM inside the Docker container to load. Ensure your Docker engine is allocated at least 4GB.
+- **Extensions**: `pgvector` and `pgcrypto` must be installed on the Postgres server. The included docker-compose image handles this automatically.
+- **Model Cost Checks**: If using free models on OpenRouter, the application strictly enforces `max_tokens: 1024` and passes an `HTTP-Referer` header to bypass 402 Cost Check errors.
