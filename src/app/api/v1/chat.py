@@ -18,7 +18,7 @@ class ChatResponse(BaseModel):
 @router.post("/", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest, db: AsyncSession = Depends(async_get_db)):
     """
-    RAG Assistant endpoint. Takes a user query and returns a response based on internal knowledge.
+    RAG Assistant endpoint. Takes a user query and returns a response based on the knowledge base.
     """
     try:
         assistant = Assistant(db)

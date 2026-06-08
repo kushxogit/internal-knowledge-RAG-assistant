@@ -19,19 +19,12 @@ async def main():
     sample_dir = Path("sample_docs")
     sample_dir.mkdir(exist_ok=True)
     
-    md_file = sample_dir / "hr_policy.md"
-    md_file.write_text("""# HR Policy
-    
-Welcome to the company!
+    md_file = sample_dir / "knowledge_base.md"
+    md_file.write_text("""# Project Athena Specification
 
-## Time Off
-You get 20 days of PTO per year.
-
-### Sick Leave
-You also get 5 days of sick leave.
-
-## Code of Conduct
-Be nice to each other.
+Project Athena is our upcoming flagship product. 
+It features a revolutionary AI engine and integrates with all major cloud providers.
+Launch date is set for Q4 2026.
 """, encoding='utf-8')
 
     async with local_session() as db:
@@ -46,7 +39,7 @@ Be nice to each other.
 
         # Create a dummy document record
         doc = Document(
-            file_name="hr_policy.md",
+            file_name="knowledge_base.md",
             content_type="text/markdown",
             size_in_bytes=len(md_file.read_text(encoding='utf-8')),
             storage_path=str(md_file),

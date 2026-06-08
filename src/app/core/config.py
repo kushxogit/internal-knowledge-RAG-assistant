@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppSettings(BaseSettings):
-    APP_NAME: str = "FastAPI app"
+    APP_NAME: str = "FastAPI RAG Boilerplate"
     APP_DESCRIPTION: str | None = None
     APP_VERSION: str | None = None
     LICENSE_NAME: str | None = None
