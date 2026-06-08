@@ -175,6 +175,9 @@ class CORSSettings(BaseSettings):
     CORS_HEADERS: list[str] = ["*"]
 
 
+class OpenRouterSettings(BaseSettings):
+    OPENROUTER_API_KEY: str | None = None
+
 class Settings(
     AppSettings,
     SQLiteSettings,
@@ -192,6 +195,7 @@ class Settings(
     CORSSettings,
     FileLoggerSettings,
     ConsoleLoggerSettings,
+    OpenRouterSettings,
 ):
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", ".env"),
