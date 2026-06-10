@@ -36,7 +36,10 @@ from .utils import cache, queue
 
 # -------------- database --------------
 async def create_tables() -> None:
+    from sqlalchemy import text
     async with engine.begin() as conn:
+        await conn.execute(text('CREATE EXTENSION IF NOT EXISTS "pgcrypto"'))
+        await conn.execute(text('CREATE EXTENSION IF NOT EXISTS "vector"'))
         await conn.run_sync(Base.metadata.create_all)
 
 

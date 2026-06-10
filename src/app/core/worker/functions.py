@@ -3,10 +3,12 @@ import logging
 from typing import Any
 
 import structlog
-import uvloop
 from arq.worker import Worker
+import sys
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if sys.platform != "win32":
+    import uvloop
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 # -------- background tasks --------
